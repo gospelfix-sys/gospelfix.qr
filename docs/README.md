@@ -1,4 +1,4 @@
-# docs — gospelfix.pay 디자인·기술 문서
+# docs — gospelfix.qr 디자인·기술 문서
 
 화면을 만들거나 고칠 때 AI에게 같이 주는 규칙 모음입니다. 범용 템플릿이 아니라 **이 프로젝트의 확정값**으로 채워져 있습니다.
 
@@ -18,7 +18,7 @@
 | `07-components.md` | 주 버튼·앱 타일·하단 고정 바·헤더·카드·입력창·선택·QR 영역 정의와 구현 위치(`components/transfer/`, `components/create/`, `hooks/useCopy.ts`), 사용 조건 |
 | `08-guidelines.md` | DO / DON'T, 증상별 원인 체크표 |
 | `09-shadcn-tokens.md` | 02~07 값 ↔ shadcn CSS 변수(`globals.css :root`) 대응, `components.json` 사용법 |
-| `TECH-STACK-PRIORITY.md` | 스택 선택 우선순위와 gospelfix.pay 적용 사례 |
+| `TECH-STACK-PRIORITY.md` | 스택 선택 우선순위와 gospelfix.qr 적용 사례 |
 
 ## 쓰는 법
 

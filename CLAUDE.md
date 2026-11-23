@@ -58,7 +58,7 @@ gospelfix 앱 팝업(QR) 또는 /(QR 만들기) ──>  https://<pay>/pay#b=&a=
 
 ## 라이브러리화 계획
 
-`@gospelfix/pay`로 npm에 배포해 여러 프로젝트에서 쓸 계획이다(범위: 로직 + React UI). 아직 착수 전이며 `package.json`은 `private: true`다. 공개 타입 `Transfer.amount`가 `number | null`로 바뀌었고, export 후보에 `BANK_OPTIONS`·`buildTransferHash`·`buildTransferUrl`·`createQrMatrix`가 추가됐다. 그래서 `src/lib/**`는 react·next·window에 의존하지 않는 순수 TS로 유지하고, 컴포넌트는 `next/*` 없이 props만으로 동작하게 쓴다. `npm publish`·`npm login`은 사용자만 실행한다.
+`@gospelfix/qr`로 npm에 배포해 여러 프로젝트에서 쓸 계획이다(범위: 로직 + React UI). 아직 착수 전이며 `package.json`은 `private: true`다. 공개 타입 `Transfer.amount`가 `number | null`로 바뀌었고, export 후보에 `BANK_OPTIONS`·`buildTransferHash`·`buildTransferUrl`·`createQrMatrix`가 추가됐다. 그래서 `src/lib/**`는 react·next·window에 의존하지 않는 순수 TS로 유지하고, 컴포넌트는 `next/*` 없이 props만으로 동작하게 쓴다. `npm publish`·`npm login`은 사용자만 실행한다.
 
 ## 서브에이전트 (오케스트레이션)
 
@@ -68,7 +68,7 @@ gospelfix 앱 팝업(QR) 또는 /(QR 만들기) ──>  https://<pay>/pay#b=&a=
 |---|---|
 | `transfer-logic` | 송금 로직 (`src/lib/**`: 파싱·검증·딥링크) |
 | `ui-writer` | shadcn 기반 UI (`src/components/**`, `globals.css`) |
-| `package-builder` | `@gospelfix/pay` npm 패키징 (배포는 사용자만) |
+| `package-builder` | `@gospelfix/qr` npm 패키징 (배포는 사용자만) |
 | `docs-keeper` | `docs/`·`CLAUDE.md` 일관성 |
 | `code-reviewer` | 읽기 전용 리뷰, 커밋 전 APPROVED 필요 |
 

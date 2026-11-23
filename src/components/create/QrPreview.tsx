@@ -10,7 +10,7 @@ import { useCopy } from "@/hooks/useCopy";
 const QUIET_ZONE = 4;
 // PNG 저장 해상도: 모듈당 픽셀 수
 const PNG_MODULE_PX = 10;
-const PNG_FILE_NAME = "gospelfix-pay-qr.png";
+const PNG_FILE_NAME = "gospelfix-qr.png";
 
 interface QrPreviewProps {
   bankLabel: string;
