@@ -4,7 +4,8 @@
 export interface Transfer {
   bankName: string;
   accountNumber: string;
-  amount: number;
+  // QR 생성 화면에서 만든 링크는 금액이 없다(보내는 사람이 금융앱에서 입력). 없으면 null
+  amount: number | null;
   accountHolder: string;
 }
 
@@ -19,12 +20,18 @@ export function parseTransferHash(hash: string): Transfer | null {
   const params = new URLSearchParams(hash.replace(/^#/, ""));
   const bankName = (params.get("b") ?? "").trim();
   const accountNumber = (params.get("a") ?? "").replace(/[^0-9]/g, "");
-  const amount = Number(params.get("m"));
+  const rawAmount = params.get("m");
   const accountHolder = (params.get("h") ?? "").trim();
 
   if (!bankName || bankName.length > 20 || UNSAFE_TEXT.test(bankName)) return null;
   if (accountNumber.length < 6 || accountNumber.length > 20) return null;
-  if (!Number.isSafeInteger(amount) || amount <= 0 || amount > MAX_AMOUNT) return null;
+  // 파라미터 없음/빈 값은 "금액 미지정"(유효), 값이 있으면 엄격 검증한다.
+  // Number("")이 0이라 둘을 구분하지 않으면 absent와 invalid가 섞이므로 먼저 분기한다
+  let amount: number | null = null;
+  if (rawAmount !== null && rawAmount !== "") {
+    amount = Number(rawAmount);
+    if (!Number.isSafeInteger(amount) || amount <= 0 || amount > MAX_AMOUNT) return null;
+  }
   if (accountHolder.length > 30 || UNSAFE_TEXT.test(accountHolder)) return null;
 
   return { bankName, accountNumber, amount, accountHolder };

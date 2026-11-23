@@ -49,6 +49,49 @@ function normalizeTossBankName(bankName: string): string | null {
   );
 }
 
+export interface BankOption {
+  // QR의 b= 에 들어가는 토스 정규 은행명(딥링크가 끊기지 않는 값)
+  value: string;
+  label: string;
+}
+
+// 흔한 은행을 앞쪽에 둔다. 여기에 없는 정규명은 별칭 표 순서대로 뒤에 붙는다
+const BANK_ORDER = [
+  "국민",
+  "신한",
+  "우리",
+  "하나",
+  "농협",
+  "기업",
+  "카카오뱅크",
+  "케이뱅크",
+  "토스뱅크",
+];
+
+// 은행이 아닌 기관은 "~은행"을 붙이면 어색해서 표시명을 따로 둔다
+const BANK_LABEL_OVERRIDES: Record<string, string> = {
+  우체국: "우체국",
+  새마을: "새마을금고",
+  신협: "신협",
+  수협: "수협은행",
+  카카오뱅크: "카카오뱅크",
+  케이뱅크: "케이뱅크",
+  토스뱅크: "토스뱅크",
+  SC제일: "SC제일은행",
+};
+
+// 별칭 표의 값에서 파생해 목록과 별칭 표가 어긋나지 않게 한다(중복 하드코딩 금지)
+const canonicalBanks = Array.from(new Set(Object.values(TOSS_BANK_ALIASES)));
+const rank = (v: string) => {
+  const i = BANK_ORDER.indexOf(v);
+  return i === -1 ? BANK_ORDER.length : i;
+};
+
+export const BANK_OPTIONS: readonly BankOption[] = canonicalBanks
+  .map((value, index) => ({ value, index }))
+  .sort((a, b) => rank(a.value) - rank(b.value) || a.index - b.index)
+  .map(({ value }) => ({ value, label: BANK_LABEL_OVERRIDES[value] ?? `${value}은행` }));
+
 export interface FinanceApp {
   id: string;
   name: string;
@@ -66,11 +109,9 @@ export const FINANCE_APPS: FinanceApp[] = [
     buildUrl: ({ bankName, accountNumber, amount }) => {
       const bank = normalizeTossBankName(bankName);
       if (!bank) return null;
-      const params = new URLSearchParams({
-        bank,
-        accountNo: accountNumber,
-        amount: String(amount),
-      });
+      const params = new URLSearchParams({ bank, accountNo: accountNumber });
+      // 금액 없는 링크는 amount를 생략해 보내는 사람이 토스에서 직접 입력하게 한다
+      if (amount !== null) params.set("amount", String(amount));
       return `supertoss://send?${params.toString()}`;
     },
   },
