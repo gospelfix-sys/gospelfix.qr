@@ -31,7 +31,10 @@ gospelfix 앱 팝업(QR)  ──>  https://<pay>/#b=&a=&m=&h=
 
 - `lib/parseTransfer.ts`: 모든 입력 검증의 단일 관문. 화면과 딥링크에는 `parseTransferHash`를 통과한 값만 쓴다(금액 상한·`isSafeInteger`, 제어·bidi 문자 거절, 예금주·은행명 길이, 계좌 숫자 6~20자).
 - `lib/apps.ts`: `FinanceApp { id, name, prefilled, buildUrl }` 목록. 현재 확인된 앱은 토스(`supertoss://send?bank=&accountNo=&amount=`, 비공식 스펙)뿐이며, 은행명 별칭 정규화(`normalizeTossBankName`)에 실패하면 `buildUrl`은 `null`을 돌려준다. 미확인 앱은 추가하지 않고 "계좌번호 복사"로 대체한다.
-- `components/TransferView.tsx`: 정보 표 + 복사 버튼 + 앱 링크 + 안내 문구. `components/ui/Button.tsx`는 현재 직접 만든 버튼이며 shadcn Button으로 교체 예정이다(어긋난 곳 목록은 `docs/README.md`).
+- `components/TransferView.tsx`: 상태 분기(로딩/유효하지 않음/정상)와 조합만 맡는다. 화면 구성은 `components/transfer/`에 나뉘어 있다: `TransferHeader`(얇은 헤더), `AmountHero`(금액 24px/600), `AccountCard`(입금 정보 표), `AppGrid`(금융앱 타일 4열, 글자만), `GuideSteps`(3단계·고지), `CopyBar`(하단 고정 바의 주 버튼), `InvalidLink`.
+- `AppGrid`: 토스(`FINANCE_APPS`)는 `buildUrl` 결과가 있으면 앱을 여는 `<a>` 타일이고, `null`이면 숨기지 않고 복사 타일로 대체한다. 토스 외 앱(`COPY_GUIDE_APPS`)은 앱을 열지 않고 계좌번호 복사 + 안내 문구만 보여준다. 타일 문구는 앱 이름만이다.
+- `hooks/useCopy.ts`: 클립보드 복사와 "복사됐어요" 상태의 **단일 출처**. 복사하는 곳은 `navigator.clipboard`를 직접 부르지 않고 이 훅을 쓴다(`"use client"`).
+- `components/ui/button.tsx`·`card.tsx`: shadcn(base-nova)을 Tailwind 3.4·이 프로젝트 디자인 규칙에 맞게 정리한 것. `size="default"`(h-12, 13px/400)는 앱 타일용, `size="lg"`(h-12, 16px/600)는 주 버튼용이다. 어긋난 곳 목록은 `docs/README.md`.
 - 링크 서명(ECDSA 위조 방지)은 미구현이다. 구현하면 서명 발급은 `gospelfix` 앱 서버, 이 저장소는 공개키 검증만 맡는다.
 
 ## 원칙
@@ -43,7 +46,7 @@ gospelfix 앱 팝업(QR)  ──>  https://<pay>/#b=&a=&m=&h=
 - 가스펄픽스 서비스 전용. 금융앱 로고는 쓰지 않고, "결제"가 아니라 "송금"이라고 표기한다. 면책 단정 문구는 쓰지 않는다.
 - 화면에는 편의 기능·제휴 아님·보내기 전 확인 안내를 항상 노출한다.
 - 커스텀 스킴(`supertoss://`)은 `next/link`가 아닌 일반 `<a>`로 연다.
-- 현재 의존성에 shadcn 관련 패키지(`@base-ui/react`, `class-variance-authority`, `lucide-react`)와 `lib/utils.ts`(`cn`), `globals.css`의 CSS 변수가 아직 없다. 설치는 사용자 승인 후에 한다.
+- shadcn 관련 패키지(`@base-ui/react`, `class-variance-authority`, `lucide-react`)와 `lib/utils.ts`(`cn`), `globals.css`의 CSS 변수는 이미 들어와 있다. 새 shadcn 컴포넌트·의존성 추가는 사용자 승인 후에 한다.
 
 ## 라이브러리화 계획
 

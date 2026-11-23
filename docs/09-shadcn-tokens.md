@@ -68,4 +68,6 @@
 - [ ] 02~07번 값만 옮겼는가
 - [ ] `components.json`이 사용자 앱과 같은가 (base-nova, neutral, cssVariables)
 - [ ] 컴포넌트가 변수 클래스(`bg-primary` 등)로만 색을 참조하는가
+- [ ] 버튼 size가 `ui/button.tsx`의 정의(`default` = h-12·13px/400 타일용, `lg` = h-12·16px/600 주 버튼용)와 07번 규칙에 맞는가
+- [ ] 타일 선택 상태가 `aria-pressed`로 표현되고, 검정(`border-primary`) 2px 스타일을 호출부가 아니라 정의 파일(`ui/button.tsx`)에서 처리하는가 (06번의 테두리 1px 규칙의 유일한 예외)
 - [ ] 안 쓰는 변수 블록(`--chart-*`, `--sidebar-*`, `.dark`)이 없는가
