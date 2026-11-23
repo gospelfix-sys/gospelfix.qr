@@ -29,7 +29,7 @@
    | `motion` | 현재 움직이는 UI 없음. 생기면 사용자 앱 규칙(`motion/react`)을 따른다 |
    | `@supabase/*`, `cmsApiFetch` 등 서버 연동 | 백엔드 없음. 필요하면 `gospelfix.cms.api`에서 시작하고 BFF를 거친다 |
    | 분석·광고 SDK, 외부 폰트 | **금지**(계좌정보 화면, `CLAUDE.md` 원칙) |
-   | `qrcode.react` | React 컴포넌트가 필요 없다. `/create`는 `qrcode-generator`(의존성 없는 순수 JS, 자체 타입)로 모듈 행렬만 만들고 `<svg>`를 직접 그린다 |
+   | `qrcode.react` | React 컴포넌트가 필요 없다. QR 만들기 화면(`/`)은 `qrcode-generator`(의존성 없는 순수 JS, 자체 타입)로 모듈 행렬만 만들고 `<svg>`를 직접 그린다 |
 
 3. **기존에 동작하던 것은 세팅 단계에서 손대지 않는다.**
    환경 세팅과 기능 구현을 분리한다. 세팅 단계에서 `gospelfix` 쪽 코드는 건드리지 않는다.

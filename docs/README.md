@@ -9,7 +9,7 @@
 | `components.json` (루트, docs 밖) | shadcn 설정(단일 출처). `shadcn add`가 읽는다 |
 | `DESIGN.md` | 01~09를 `@docs/...`로 불러오는 참조 인덱스. 화면 작업 때마다 AI에게 전달 |
 | `design.shadcn.md` | 01~09 확정값을 한 장으로 요약. 한 번에 붙여넣을 때 사용 |
-| `01-style-reference.md` | 서비스 성격, 분위기 단어 3개, 테마·화면 크기, 화면 상태(금액 없는 송금 화면, `/create` 포함) |
+| `01-style-reference.md` | 서비스 성격, 분위기 단어 3개, 테마·화면 크기, 화면 상태(금액 없는 송금 화면, QR 만들기 `/` 포함) |
 | `02-colors.md` | 색 7개 (Tailwind gray 팔레트 + 검정 포인트) |
 | `03-typography.md` | 글자 6단계(금액 24 포함), 굵기 400/600, 시스템 폰트 |
 | `04-spacing.md` | 4px 스케일, 자리별 여백 |
@@ -48,5 +48,5 @@
 ## 결정 이력
 
 - 오류 표시는 빨간색 없이 검정으로 한다(문구 `font-semibold` + `role="alert"`, 필드 `aria-invalid` 시 `border-primary` 2px). `--destructive`는 `globals.css`에 정의만 두고 화면에 쓰지 않는다.
-- `/create` 안내 문구 A(하단 상시)·B(QR 생성 후)는 확정 문구로 노출한다(`07-components.md`).
-- 송금 화면(`/`)의 `GuideSteps`·고지문은 그대로 유지한다. 금액 없는 링크에서도 "금액 확인"이 보이는 것은 알려진 사실이며 의도적으로 유지한다.
+- QR 만들기 화면(`/`) 안내 문구 A(하단 상시)·B(QR 생성 후)는 확정 문구로 노출한다(`07-components.md`).
+- 송금 화면(`/pay`)의 `GuideSteps`·고지문은 그대로 유지한다. 금액 없는 링크에서도 "금액 확인"이 보이는 것은 알려진 사실이며 의도적으로 유지한다.

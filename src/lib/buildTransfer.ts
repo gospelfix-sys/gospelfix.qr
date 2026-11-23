@@ -27,5 +27,5 @@ export function buildTransferHash(input: TransferInput): string | null {
 export function buildTransferUrl(origin: string, input: TransferInput): string | null {
   const hash = buildTransferHash(input);
   if (!hash) return null;
-  return `${origin.replace(/\/+$/, "")}/${hash}`;
+  return `${origin.replace(/\/+$/, "")}/pay${hash}`;
 }

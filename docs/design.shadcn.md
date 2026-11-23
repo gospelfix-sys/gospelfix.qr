@@ -41,14 +41,14 @@
 - 금융앱 타일: shadcn `Button` outline + 기본 size(48px, 13px/400) — 4열 그리드, 글자만(앱 이름만, 로고 없음). 복사 타일을 누르면 그 타일만 검정 2px 테두리로 선택 표시(`aria-pressed`, `ui/button.tsx`에서 처리, 하단 복사 버튼을 누르면 해제, 토스 링크 타일은 해당 없음). 토스는 `<a className={buttonVariants({ variant: "outline" })}>`로 앱을 열고, 토스 `buildUrl`이 `null`이면 복사 타일로 대체하며, 토스 외 앱(`COPY_GUIDE_APPS`)은 앱을 열지 않고 계좌번호 복사 + 안내 문구
 - 헤더: 높이 48px 얇은 상단 바(글자만, 아래 테두리 1px)
 - 카드: shadcn `Card` — `bg-card`, 12px, 테두리 1px, 그림자 없음
-- 입력창 `Input`·선택 `Select`(`/create`만): 높이 48px, 16px/400(iOS 확대 방지), `rounded-lg`, 테두리 1px `border-input`, 그림자 없음. 오류(`aria-invalid`)는 검정(`border-primary`) 2px 테두리, 오류 문구는 `font-semibold` + `role="alert"`(빨강 없음). Select 팝업은 테두리 1px·`bg-popover`
-- QR 영역(`/create`): 흰 바탕·검정 모듈 고정, 여백 4모듈, 테두리 1px + 12px, 위에 입금 정보 요약 카드로 대조. QR·요약 카드 근처에 안내 문구 B. 보조 버튼 "PNG로 저장"·"링크 복사"(outline). PNG canvas는 `#ffffff`/`#000000` 직접 사용(QR 규격 값, canvas는 CSS 변수 불가)
+- 입력창 `Input`·선택 `Select`(QR 만들기 화면 `/`만): 높이 48px, 16px/400(iOS 확대 방지), `rounded-lg`, 테두리 1px `border-input`, 그림자 없음. 오류(`aria-invalid`)는 검정(`border-primary`) 2px 테두리, 오류 문구는 `font-semibold` + `role="alert"`(빨강 없음). Select 팝업은 테두리 1px·`bg-popover`
+- QR 영역(`/`): 흰 바탕·검정 모듈 고정, 여백 4모듈, 테두리 1px + 12px, 위에 입금 정보 요약 카드로 대조. QR·요약 카드 근처에 안내 문구 B. 보조 버튼 "PNG로 저장"·"링크 복사"(outline). PNG canvas는 `#ffffff`/`#000000` 직접 사용(QR 규격 값, canvas는 CSS 변수 불가)
 - 칩·배지·탭: 없음
 
 ## 화면 순서
 헤더 → 보낼 금액(24px/600, 금액 없는 링크는 이 영역 없음) → 입금 정보 카드 → 앱 타일 4열 → 안내 3단계·고지 → 하단 고정 바(계좌번호 복사)
 
-`/create`: 헤더("QR 만들기") → 은행 선택·계좌번호·예금주(선택) → "QR 만들기" → 입금 정보 카드 → QR(+ 안내 문구 B) → PNG 저장·링크 복사 → 화면 하단 안내 문구 A(항상) (하단 고정 바 없음, 금액 입력 없음, 입력값 저장 안 함)
+`/`(QR 만들기): 헤더("QR 만들기") → 은행 선택·계좌번호·예금주(선택) → "QR 만들기" → 입금 정보 카드 → QR(+ 안내 문구 B) → PNG 저장·링크 복사 → 화면 하단 안내 문구 A(항상) (하단 고정 바 없음, 금액 입력 없음, 입력값 저장 안 함)
 
 ## Guidelines
 
@@ -57,8 +57,8 @@
 - 포인트 색은 주 버튼에만 쓴다
 - 입력(fragment)은 `parseTransferHash`를 거친 값만 쓴다
 - "제휴 아님 + 보내기 전 확인" 고지와 "계좌번호 복사"를 항상 보여준다
-- 입력값(/create)은 저장·전송하지 않고, QR 링크는 왕복 검증(`buildTransferUrl`)을 거친 값만 쓴다
-- `/create`는 확정 안내 문구 2건을 노출한다. A(하단, 항상): "QR을 스캔한 사람이 금융앱에서 금액을 직접 입력해요. 링크를 받은 사람은 누구나 이 계좌 정보를 볼 수 있어요." B(QR 생성 후, QR·요약 카드 근처): "QR을 공유하기 전에 은행·계좌번호·예금주를 꼭 확인해 주세요."
+- 입력값(`/` QR 만들기)은 저장·전송하지 않고, QR 링크는 왕복 검증(`buildTransferUrl`)을 거친 값만 쓴다
+- `/`(QR 만들기)는 확정 안내 문구 2건을 노출한다. A(하단, 항상): "QR을 스캔한 사람이 금융앱에서 금액을 직접 입력해요. 링크를 받은 사람은 누구나 이 계좌 정보를 볼 수 있어요." B(QR 생성 후, QR·요약 카드 근처): "QR을 공유하기 전에 은행·계좌번호·예금주를 꼭 확인해 주세요."
 - 오류는 굵기·테두리로 구분한다(`font-semibold` + `role="alert"`, `aria-invalid` 시 검정 2px 테두리)
 - 용어는 "송금/입금"
 
