@@ -47,7 +47,7 @@
 ### DO
 - UX/UI는 shadcn 컴포넌트 기반. 있는 UI는 직접 만들지 않고, 모양 변경은 `components/ui/*` 정의 파일에서
 - 포인트 색은 주 버튼에만 쓴다
-- 입력(fragment)은 `parseTransfer`를 거친 값만 쓴다
+- 입력(fragment)은 `parseTransferHash`를 거친 값만 쓴다
 - "제휴 아님 + 보내기 전 확인" 고지와 "계좌번호 복사"를 항상 보여준다
 - 용어는 "송금/입금"
 
