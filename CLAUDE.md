@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-가스펄픽스 입금 안내 중간 페이지. QR을 스캔하면 금융앱 버튼 목록을 보여주고, 누른 앱의 송금 화면으로 이동시킨다.
+가스펄픽스 입금 안내 중간 페이지. QR을 스캔하면 금융앱 버튼 목록을 보여주고, 누른 앱의 송금 화면으로 이동시킨다. `/create`에서는 은행·계좌번호·예금주만 입력해 이 페이지로 연결되는 QR을 만들 수 있다(금액 없음).
 코드 컨벤션은 사용자 앱(`gospelfix` 저장소의 `CLAUDE.md`)을 따르되, 이 저장소는 정적 사이트라 BFF·Recoil은 쓰지 않는다.
 
 ## 명령어
@@ -22,35 +22,41 @@ npx tsc --noEmit  # 타입 체크
 서버·DB·API·환경변수가 없는 정적 사이트다. 계좌정보는 **URL fragment로만** 흐른다.
 
 ```
-gospelfix 앱 팝업(QR)  ──>  https://<pay>/#b=&a=&m=&h=
+gospelfix 앱 팝업(QR) 또는 /create(QR) ──>  https://<pay>/#b=&a=&h=[&m=]
                               │ (fragment는 서버로 전송되지 않음)
                     page.tsx ─> TransferView(클라이언트)
                                   ├─ lib/parseTransfer.ts  hash 문자열 파싱·검증(`parseTransferHash`, hash는 TransferView가 읽음) (실패 시 "유효하지 않은 링크")
                                   └─ lib/apps.ts           FINANCE_APPS[].buildUrl(transfer) → 앱 딥링크
+
+/create (브라우저에서만 생성, 서버·저장 없음)
+  CreateForm ─ lib/buildTransfer.ts(hash 직렬화 → parseTransferHash 왕복 검증) ─ lib/qr.ts(모듈 행렬) ─> QrPreview(<svg>)
 ```
 
-- `lib/parseTransfer.ts`: 모든 입력 검증의 단일 관문. 화면과 딥링크에는 `parseTransferHash`를 통과한 값만 쓴다(금액 상한·`isSafeInteger`, 제어·bidi 문자 거절, 예금주·은행명 길이, 계좌 숫자 6~20자).
-- `lib/apps.ts`: `FinanceApp { id, name, prefilled, buildUrl }` 목록. 현재 확인된 앱은 토스(`supertoss://send?bank=&accountNo=&amount=`, 비공식 스펙)뿐이며, 은행명 별칭 정규화(`normalizeTossBankName`)에 실패하면 `buildUrl`은 `null`을 돌려준다. 미확인 앱은 추가하지 않고 "계좌번호 복사"로 대체한다.
-- `components/TransferView.tsx`: 상태 분기(로딩/유효하지 않음/정상)와 조합만 맡는다. 화면 구성은 `components/transfer/`에 나뉘어 있다: `TransferHeader`(얇은 헤더), `AmountHero`(금액 24px/600), `AccountCard`(입금 정보 표), `AppGrid`(금융앱 타일 4열, 글자만), `GuideSteps`(3단계·고지), `CopyBar`(하단 고정 바의 주 버튼), `InvalidLink`.
+- `lib/parseTransfer.ts`: 모든 입력 검증의 단일 관문. 화면과 딥링크에는 `parseTransferHash`를 통과한 값만 쓴다(금액 상한·`isSafeInteger`, 제어·bidi 문자 거절, 예금주·은행명 길이, 계좌 숫자 6~20자). **`m`(금액)은 선택값**이다: 없거나 빈 값이면 유효(`Transfer.amount === null`), 값이 있으면 엄격 검증하고 잘못되면 링크 전체가 무효다.
+- `lib/apps.ts`: `FinanceApp { id, name, prefilled, buildUrl }` 목록. 현재 확인된 앱은 토스(`supertoss://send?bank=&accountNo=&amount=`, 비공식 스펙, 금액이 없으면 `amount` 생략)뿐이며, 은행명 별칭 정규화(`normalizeTossBankName`)에 실패하면 `buildUrl`은 `null`을 돌려준다. 미확인 앱은 추가하지 않고 "계좌번호 복사"로 대체한다. `BANK_OPTIONS`(`{value,label}[]`)는 은행명 별칭 표에서 파생한 `/create`의 은행 선택 목록이다(`value`는 토스 정규 은행명).
+- `lib/buildTransfer.ts`: `buildTransferHash`/`buildTransferUrl`. 검증 규칙을 복제하지 않고 직렬화한 결과를 `parseTransferHash`로 왕복 검증해 통과할 때만 돌려준다(받는 쪽이 거절할 QR을 만들지 않는 단일 관문 유지). `lib/qr.ts`의 `createQrMatrix`는 `qrcode-generator`로 `boolean[][]`만 돌려주며(용량 초과 시 `null`) 화면은 이를 `<svg><path>`로 직접 그린다(`dangerouslySetInnerHTML` 미사용).
+- `components/TransferView.tsx`: 상태 분기(로딩/유효하지 않음/정상)와 조합만 맡는다. 화면 구성은 `components/transfer/`에 나뉘어 있다: `TransferHeader`(얇은 헤더), `AmountHero`(금액 24px/600, 금액이 없으면 그리지 않음), `AccountCard`(입금 정보 표), `AppGrid`(금융앱 타일 4열, 글자만), `GuideSteps`(3단계·고지), `CopyBar`(하단 고정 바의 주 버튼), `InvalidLink`.
+- `components/create/`(`/create` 화면): `CreateForm`(은행 Select·계좌번호·예금주 Input, 입력값은 상태에만 두고 저장하지 않으며 입력이 바뀌면 이전 QR을 지운다), `QrPreview`(입력 요약 카드 → 흰 바탕 고정 QR → PNG 저장·링크 복사). 링크 복사는 `useCopy`를 재사용한다. 입력값·생성 결과를 서버로 보내지 않는다.
 - `AppGrid`: 토스(`FINANCE_APPS`)는 `buildUrl` 결과가 있으면 앱을 여는 `<a>` 타일이고, `null`이면 숨기지 않고 복사 타일로 대체한다. 토스 외 앱(`COPY_GUIDE_APPS`)은 앱을 열지 않고 계좌번호 복사 + 안내 문구만 보여준다. 타일 문구는 앱 이름만이다.
 - `hooks/useCopy.ts`: 클립보드 복사와 "복사됐어요" 상태의 **단일 출처**. 복사하는 곳은 `navigator.clipboard`를 직접 부르지 않고 이 훅을 쓴다(`"use client"`).
-- `components/ui/button.tsx`·`card.tsx`: shadcn(base-nova)을 Tailwind 3.4·이 프로젝트 디자인 규칙에 맞게 정리한 것. `size="default"`(h-12, 13px/400)는 앱 타일용, `size="lg"`(h-12, 16px/600)는 주 버튼용이다. 어긋난 곳 목록은 `docs/README.md`.
+- `components/ui/button.tsx`·`card.tsx`·`input.tsx`·`select.tsx`: shadcn(base-nova)을 Tailwind 3.4·이 프로젝트 디자인 규칙에 맞게 정리한 것. `size="default"`(h-12, 13px/400)는 앱 타일용, `size="lg"`(h-12, 16px/600)는 주 버튼용이다. 어긋난 곳 목록은 `docs/README.md`.
 - 링크 서명(ECDSA 위조 방지)은 미구현이다. 구현하면 서명 발급은 `gospelfix` 앱 서버, 이 저장소는 공개키 검증만 맡는다.
 
 ## 원칙
 
 - **모든 UX/UI는 shadcn/ui 컴포넌트(base-nova)를 기반으로 만든다.** 설정은 루트 `components.json`, 추가는 `npx shadcn@latest add <이름>`, `asChild` 금지(링크 버튼은 `<a className={buttonVariants({variant})}>`). 값·규칙은 `docs/DESIGN.md`(→ `docs/07-components.md`, `docs/09-shadcn-tokens.md`)를 따른다. 색은 CSS 변수 클래스(`bg-card`, `border-border` 등)만 쓴다.
-- **계좌정보는 URL fragment(`#b=&a=&m=&h=`)로만 받는다.** `?query`로 바꾸지 않는다.
+- **계좌정보는 URL fragment(`#b=&a=&h=`, `m`은 선택)로만 받는다.** `?query`로 바꾸지 않는다.
 - 백엔드가 필요해지면 `gospelfix.cms.api`에서 시작하고, 이 앱은 직접 호출하지 않는다.
 - `noindex`. 분석 스크립트·외부 요청·콘솔 로그·외부 폰트 금지.
 - 가스펄픽스 서비스 전용. 금융앱 로고는 쓰지 않고, "결제"가 아니라 "송금"이라고 표기한다. 면책 단정 문구는 쓰지 않는다.
-- 화면에는 편의 기능·제휴 아님·보내기 전 확인 안내를 항상 노출한다.
+- 화면에는 편의 기능·제휴 아님·보내기 전 확인 안내를 항상 노출한다. `/create` 화면은 확정된 두 안내 문구(A: 하단 상시, B: QR 생성 후)를 노출한다(문구는 `docs/07-components.md`).
+- 오류 표시는 빨간색이 아니라 검정이다: 오류 문구 `font-semibold` + `role="alert"`, 오류 필드 `aria-invalid` 시 `border-primary` 2px. `--destructive`는 화면에 쓰지 않는다.
 - 커스텀 스킴(`supertoss://`)은 `next/link`가 아닌 일반 `<a>`로 연다.
-- shadcn 관련 패키지(`@base-ui/react`, `class-variance-authority`, `lucide-react`)와 `lib/utils.ts`(`cn`), `globals.css`의 CSS 변수는 이미 들어와 있다. 새 shadcn 컴포넌트·의존성 추가는 사용자 승인 후에 한다.
+- shadcn 관련 패키지(`@base-ui/react`, `class-variance-authority`, `lucide-react`)와 `lib/utils.ts`(`cn`), `globals.css`의 CSS 변수, shadcn 컴포넌트 `button`·`card`·`input`·`select`, QR 의존성 `qrcode-generator`는 이미 들어와 있다. 새 shadcn 컴포넌트·의존성 추가는 사용자 승인 후에 한다.
 
 ## 라이브러리화 계획
 
-`@gospelfix/pay`로 npm에 배포해 여러 프로젝트에서 쓸 계획이다(범위: 로직 + React UI). 아직 착수 전이며 `package.json`은 `private: true`다. 그래서 `src/lib/**`는 react·next·window에 의존하지 않는 순수 TS로 유지하고, 컴포넌트는 `next/*` 없이 props만으로 동작하게 쓴다. `npm publish`·`npm login`은 사용자만 실행한다.
+`@gospelfix/pay`로 npm에 배포해 여러 프로젝트에서 쓸 계획이다(범위: 로직 + React UI). 아직 착수 전이며 `package.json`은 `private: true`다. 공개 타입 `Transfer.amount`가 `number | null`로 바뀌었고, export 후보에 `BANK_OPTIONS`·`buildTransferHash`·`buildTransferUrl`·`createQrMatrix`가 추가됐다. 그래서 `src/lib/**`는 react·next·window에 의존하지 않는 순수 TS로 유지하고, 컴포넌트는 `next/*` 없이 props만으로 동작하게 쓴다. `npm publish`·`npm login`은 사용자만 실행한다.
 
 ## 서브에이전트 (오케스트레이션)
 

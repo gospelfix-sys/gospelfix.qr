@@ -9,13 +9,13 @@
 | `components.json` (루트, docs 밖) | shadcn 설정(단일 출처). `shadcn add`가 읽는다 |
 | `DESIGN.md` | 01~09를 `@docs/...`로 불러오는 참조 인덱스. 화면 작업 때마다 AI에게 전달 |
 | `design.shadcn.md` | 01~09 확정값을 한 장으로 요약. 한 번에 붙여넣을 때 사용 |
-| `01-style-reference.md` | 서비스 성격, 분위기 단어 3개, 테마·화면 크기, 화면 상태 |
+| `01-style-reference.md` | 서비스 성격, 분위기 단어 3개, 테마·화면 크기, 화면 상태(금액 없는 송금 화면, `/create` 포함) |
 | `02-colors.md` | 색 7개 (Tailwind gray 팔레트 + 검정 포인트) |
 | `03-typography.md` | 글자 6단계(금액 24 포함), 굵기 400/600, 시스템 폰트 |
 | `04-spacing.md` | 4px 스케일, 자리별 여백 |
 | `05-radius.md` | 버튼 8 / 카드 12 / 원형 999 |
 | `06-elevation.md` | 테두리만 사용, 그림자 없음 |
-| `07-components.md` | 주 버튼·앱 타일·하단 고정 바·헤더·카드 정의와 구현 위치(`components/transfer/`, `hooks/useCopy.ts`), 사용 조건 |
+| `07-components.md` | 주 버튼·앱 타일·하단 고정 바·헤더·카드·입력창·선택·QR 영역 정의와 구현 위치(`components/transfer/`, `components/create/`, `hooks/useCopy.ts`), 사용 조건 |
 | `08-guidelines.md` | DO / DON'T, 증상별 원인 체크표 |
 | `09-shadcn-tokens.md` | 02~07 값 ↔ shadcn CSS 변수(`globals.css :root`) 대응, `components.json` 사용법 |
 | `TECH-STACK-PRIORITY.md` | 스택 선택 우선순위와 gospelfix.pay 적용 사례 |
@@ -37,6 +37,16 @@
 
 ## 현재 코드와 문서가 어긋난 곳 (코드를 문서에 맞출 때 참고)
 
-문서는 목표 상태이고, 아래는 지금 `src/`가 문서와 다른 부분입니다. 이전 표의 shadcn 이전 항목(의존성·`globals.css` 변수·`lib/utils.ts`·shadcn `button.tsx`·`card.tsx`로 교체, 굵기 700, 보조 버튼 테두리 색)은 모두 해소되어 삭제했습니다.
+문서는 목표 상태이고, 이 표는 지금 `src/`가 문서와 다른 부분입니다. 현재 어긋난 곳은 **없음**입니다(shadcn 이전 항목과 오류 표시 `destructive` 항목은 모두 해소되어 삭제했습니다).
 
-현재 어긋난 곳은 없습니다. 코드를 바꾸면서 문서와 달라지면 여기에 한 줄씩 기록합니다.
+코드를 바꾸면서 문서와 달라지면 여기에 한 줄씩 기록합니다.
+
+| 위치 | 코드 | 문서 |
+|---|---|---|
+| (없음) | | |
+
+## 결정 이력
+
+- 오류 표시는 빨간색 없이 검정으로 한다(문구 `font-semibold` + `role="alert"`, 필드 `aria-invalid` 시 `border-primary` 2px). `--destructive`는 `globals.css`에 정의만 두고 화면에 쓰지 않는다.
+- `/create` 안내 문구 A(하단 상시)·B(QR 생성 후)는 확정 문구로 노출한다(`07-components.md`).
+- 송금 화면(`/`)의 `GuideSteps`·고지문은 그대로 유지한다. 금액 없는 링크에서도 "금액 확인"이 보이는 것은 알려진 사실이며 의도적으로 유지한다.
