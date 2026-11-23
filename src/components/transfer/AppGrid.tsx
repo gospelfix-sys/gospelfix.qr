@@ -1,5 +1,5 @@
 import { Button, buttonVariants } from "@/components/ui/button";
-import { COPY_GUIDE_APPS, FINANCE_APPS } from "@/lib/apps";
+import { LAUNCH_APPS } from "@/lib/apps";
 import type { Transfer } from "@/lib/parseTransfer";
 import { cn } from "@/lib/utils";
 
@@ -13,38 +13,40 @@ interface AppGridProps {
 
 // 금융앱 타일. 글자만 쓰고 로고·상표는 쓰지 않는다(제휴로 오해될 수 있음)
 export default function AppGrid({ transfer, onCopy, copiedAppName }: AppGridProps) {
-  const copyTiles = [...FINANCE_APPS.filter((app) => !app.buildUrl(transfer)), ...COPY_GUIDE_APPS];
-
   return (
     <section aria-labelledby="app-grid-title" className="space-y-2">
       <h2 id="app-grid-title" className="text-[13px] font-semibold">
         자주 쓰는 앱
       </h2>
       <ul className="grid grid-cols-4 gap-2">
-        {FINANCE_APPS.map((app) => {
+        {LAUNCH_APPS.map((app) => {
           const url = app.buildUrl(transfer);
-          if (!url) return null;
           return (
             <li key={app.id} className="flex">
-              {/* 일반 <a>: 커스텀 스킴을 라우터가 가로채지 않게 한다 */}
-              <a className={cn(buttonVariants({ variant: "outline" }), "w-full")} href={url}>
-                {app.name}
-              </a>
+              {url ? (
+                // 일반 <a>: 커스텀 스킴을 라우터가 가로채지 않게 한다.
+                // 계좌가 채워지지 않는 앱은 누를 때 계좌번호를 복사해 두어 앱에서 붙여넣기만 하면 된다
+                <a
+                  className={cn(buttonVariants({ variant: "outline" }), "w-full")}
+                  href={url}
+                  onClick={app.prefilled ? undefined : () => onCopy(app.name)}
+                >
+                  {app.name}
+                </a>
+              ) : (
+                // 열 수 없는 앱은 숨기지 않고 복사 타일로 대체한다
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  aria-pressed={copiedAppName === app.name}
+                  onClick={() => onCopy(app.name)}
+                >
+                  {app.name}
+                </Button>
+              )}
             </li>
           );
         })}
-        {copyTiles.map((app) => (
-          <li key={app.id} className="flex">
-            <Button
-              variant="outline"
-              className="w-full"
-              aria-pressed={copiedAppName === app.name}
-              onClick={() => onCopy(app.name)}
-            >
-              {app.name}
-            </Button>
-          </li>
-        ))}
       </ul>
       {/* 항상 렌더링해 두어야 내용이 바뀔 때 스크린리더가 읽는다 */}
       <p role="status" className="text-[13px] text-muted-foreground">

@@ -69,6 +69,6 @@
 - **`next.config.mjs`**: `output: "export"`, `images.unoptimized: true`. 서버가 없어 Route Handler·`serverFetch`를 쓰지 않는다.
 - **레퍼런스의 결함은 복제하지 않음**: 사용자 앱의 `images.unoptimized`는 Vercel 402 임시 우회지만, 이 프로젝트는 정적 export라 이미지 최적화가 애초에 불가능해 같은 값이어도 이유가 다르다.
 - **리뷰에서 걸러진 것**: 금액 상한·`isSafeInteger`(`1e21` 방지), 제어·bidi 문자 거절, raw `<button>`의 `ui/Button.tsx` 분리(이후 shadcn `button.tsx`로 교체 완료). 그대로 `docs/08-guidelines.md`의 DON'T와 증상표에 반영했다.
-- **미룬 것**: 링크 위조 방지 서명(ECDSA)과 공개키 검증, 금융앱 추가(스킴 확인 후), 실기기 확인, Vercel 프로젝트·도메인.
+- **미룬 것**: 링크 위조 방지 서명(ECDSA)과 공개키 검증, 금융앱 스킴의 실기기 확인, Vercel 프로젝트·도메인.
 
 관련 문서: `CLAUDE.md`(프로젝트 원칙), `components.json`(shadcn 설정), `docs/DESIGN.md`(디자인 규칙 인덱스).

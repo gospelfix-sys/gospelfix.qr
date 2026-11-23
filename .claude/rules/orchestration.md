@@ -68,7 +68,7 @@ gospelfix.pay의 작업은 **메인 세션(오케스트레이터)** 이 전문 �
 
 - 새 의존성 설치(`tsup`, `@base-ui/react`, `class-variance-authority`, `lucide-react`, `shadcn` CLI 등)와 락파일 변경
 - `npm login`, `@gospelfix` 조직 생성, **`npm publish`** 및 배포 직전 최종 확인
-- 법적 문구 변경, 새 금융앱 스킴 추가(실기기 확인 필요)
+- 법적 문구 변경, 새 금융앱 스킴 추가(공개 목록 출처 + 실기기 확인 필요)
 - `git commit`/`git push` (code-reviewer APPROVED 후에도 사용자의 커밋 요청이 있을 때만)
 - `components.json`·`.claude/settings.json` 변경
 

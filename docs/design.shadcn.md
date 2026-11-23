@@ -38,7 +38,7 @@
 
 ## Components (shadcn)
 - 주 버튼: shadcn `Button` default + `size="lg"`(48px, 16px/600) — 주황 배경 + 검정 글자, 화면당 하나("계좌번호 복사"·"QR 만들기"), 하단 고정 바(`sticky bottom-0`, 위 테두리 1px, safe-area 여백)에 둔다
-- 금융앱 타일: shadcn `Button` outline + 기본 size(48px, 13px/400) — 4열 그리드, 글자만(앱 이름만, 로고 없음). 복사 타일을 누르면 그 타일만 검정(`border-foreground`) 2px 테두리로 선택 표시(`aria-pressed`, `ui/button.tsx`에서 처리, 하단 복사 버튼을 누르면 해제, 토스 링크 타일은 해당 없음). 토스는 `<a className={buttonVariants({ variant: "outline" })}>`로 앱을 열고, 토스 `buildUrl`이 `null`이면 복사 타일로 대체하며, 토스 외 앱(`COPY_GUIDE_APPS`)은 앱을 열지 않고 계좌번호 복사 + 안내 문구
+- 금융앱 타일: shadcn `Button` outline + 기본 size(48px, 13px/400) — 4열 그리드, 글자만(앱 이름만, 로고 없음). 토스 복사 폴백 타일을 누르면 그 타일만 검정(`border-foreground`) 2px 테두리로 선택 표시(`aria-pressed`, `ui/button.tsx`에서 처리, 하단 복사 버튼을 누르면 해제, 링크 타일은 해당 없음). `LAUNCH_APPS` 단일 목록의 `buildUrl(transfer)`가 있으면 `<a className={buttonVariants({ variant: "outline" })} href>`로 앱을 열고(토스는 사전입력 딥링크), `prefilled`가 false인 앱은 onClick으로 계좌번호를 복사한 뒤 앱만 열며, 토스 `buildUrl`이 `null`이면 복사 타일로 대체하고(송금 화면 직행은 토스만, 스킴은 실기기 확인 전) 복사 안내 문구를 보여준다
 - 헤더: 높이 48px 얇은 상단 바(글자만, 아래 테두리 1px)
 - 카드: shadcn `Card` — `bg-card`(흰색), 16px, 테두리 1px, 그림자 없음
 - 입력창 `Input`·선택 `Select`(QR 만들기 화면 `/`만): 높이 48px, 16px/400(iOS 확대 방지), `rounded-2xl`, `bg-card`, 테두리 1px `border-input`, 그림자 없음. 오류(`aria-invalid`)는 검정(`border-foreground`) 2px 테두리(`border-primary`는 주황이라 쓰지 않음), 오류 문구는 `font-semibold` + `role="alert"`(빨강 없음). Select 팝업은 테두리 1px·`bg-popover`

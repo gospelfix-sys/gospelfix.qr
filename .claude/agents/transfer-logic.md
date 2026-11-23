@@ -24,7 +24,7 @@ color: blue
 1. **계좌정보는 URL fragment(`#b=&a=&m=&h=`)로만 받는다.** `?query`, `localStorage`, 쿠키, `console.*` 로 옮기지 않는다. 에러 메시지·예외에도 입력값을 넣지 않는다.
 2. **검증이 먼저다.** 화면과 딥링크에는 `parseTransferHash`를 통과한 값만 쓴다. 현재 규칙(바꾸려면 근거를 보고): 금액 `Number.isSafeInteger` + `MAX_AMOUNT = 1_000_000_000`, 제어·bidi 문자 거절(`UNSAFE_TEXT`), 예금주 ≤30자, 은행명 ≤20자, 계좌번호 숫자 6~20자.
 3. 잘못된 입력은 throw가 아니라 "유효하지 않은 링크"로 이어지는 실패 값(`null` 등)으로 돌려준다.
-4. **확인된 금융앱 스킴만 `FINANCE_APPS`에 넣는다.** 현재는 토스(`supertoss://send?bank=&accountNo=&amount=`, 비공식 스펙)만 확인됐다. 미확인 앱은 추가하지 않고 "계좌번호 복사"가 대안이 되게 한다. 은행명이 인식되지 않으면 `buildUrl`은 `null`을 반환한다.
+4. **금융앱 스킴은 공개 목록 출처 + 사용자 승인 + 실기기 확인을 거쳐 `LAUNCH_APPS`에 넣는다(`launchApp(id, name, url)` 헬퍼: 문자열=앱만 여는 스킴, 함수=사전입력 딥링크).** 사전입력은 토스(`supertoss://send?bank=&accountNo=&amount=`, 비공식 스펙)만 확인됐다. 나머지 7개는 앱 실행 스킴이며 실기기 확인 전이다. 송금 화면 주소를 추측해 넣지 않고, 열리지 않는 경우 "계좌번호 복사"가 대안이 되게 한다. 은행명이 인식되지 않으면 `buildUrl`은 `null`을 반환한다.
 5. 딥링크 값은 반드시 `encodeURIComponent` 처리한다.
 6. **라이브러리 호환:** `src/lib/**` 는 `react`, `next/*`, `window` 에 의존하지 않는 순수 TypeScript로 유지한다(Node·브라우저·다른 프로젝트에서 그대로 import 가능해야 함). 서명 검증이 필요하면 `globalThis.crypto.subtle`(WebCrypto)만 쓴다.
 7. 링크 위조 방지(ECDSA P-256 서명, exp 만료, 공개키 검증)는 아직 미구현이다. 구현하게 되면 공개키 상수 + 검증 함수만 이 저장소에 두고, 서명 발급은 `gospelfix` 앱의 서버 쪽 책임이므로 이 저장소에 개인키·서명 코드를 넣지 않는다.

@@ -1,7 +1,7 @@
 import type { Transfer } from "@/lib/parseTransfer";
 
-// 금융앱 버튼 목록. 사전입력 딥링크는 확인된 앱만 넣는다(비공식 스펙이라 앱 업데이트로 깨질 수 있다).
-// 미확인 앱은 넣지 않고 화면의 "계좌번호 복사"가 항상 대안이 되게 한다.
+// 금융앱 버튼 목록(LAUNCH_APPS). 사전입력 딥링크는 확인된 앱(토스)만 쓰고(비공식 스펙이라 앱 업데이트로 깨질 수 있다),
+// 나머지는 계좌를 싣지 않고 앱만 연다. 어느 쪽이든 화면의 "계좌번호 복사"가 항상 대안이 된다.
 
 // 입력된 은행명 → 토스가 인식하는 짧은 은행명
 const TOSS_BANK_ALIASES: Record<string, string> = {
@@ -92,7 +92,7 @@ export const BANK_OPTIONS: readonly BankOption[] = canonicalBanks
   .sort((a, b) => rank(a.value) - rank(b.value) || a.index - b.index)
   .map(({ value }) => ({ value, label: BANK_LABEL_OVERRIDES[value] ?? `${value}은행` }));
 
-export interface FinanceApp {
+export interface LaunchApp {
   id: string;
   name: string;
   // 은행·계좌·금액까지 미리 채워지는지. false면 앱만 열리고 계좌는 복사해 붙여넣어야 한다
@@ -101,35 +101,37 @@ export interface FinanceApp {
   buildUrl: (transfer: Transfer) => string | null;
 }
 
-export const FINANCE_APPS: FinanceApp[] = [
-  {
-    id: "toss",
-    name: "토스",
-    prefilled: true,
-    buildUrl: ({ bankName, accountNumber, amount }) => {
-      const bank = normalizeTossBankName(bankName);
-      if (!bank) return null;
-      const params = new URLSearchParams({ bank, accountNo: accountNumber });
-      // 금액 없는 링크는 amount를 생략해 보내는 사람이 토스에서 직접 입력하게 한다
-      if (amount !== null) params.set("amount", String(amount));
-      return `supertoss://send?${params.toString()}`;
-    },
-  },
-];
-
-export interface CopyGuideApp {
-  id: string;
-  name: string;
+// 문자열이면 앱만 여는 상수 스킴(계좌 미입력), 함수면 transfer로 URL을 만드는 사전입력 딥링크다
+function launchApp(
+  id: string,
+  name: string,
+  url: string | ((transfer: Transfer) => string | null),
+): LaunchApp {
+  return typeof url === "string"
+    ? { id, name, prefilled: false, buildUrl: () => url }
+    : { id, name, prefilled: true, buildUrl: url };
 }
 
-// 스킴이 확인되지 않은 앱이라 앱을 열지 않고 "계좌번호 복사"만 안내한다.
-// 그래서 buildUrl 같은 URL 필드를 두지 않는다(미확인 스킴 추가 금지).
-export const COPY_GUIDE_APPS: readonly CopyGuideApp[] = [
-  { id: "kb", name: "국민" },
-  { id: "nh", name: "농협" },
-  { id: "kakaobank", name: "카카오" },
-  { id: "shinhan", name: "신한" },
-  { id: "woori", name: "우리" },
-  { id: "hana", name: "하나" },
-  { id: "kbank", name: "케뱅" },
+function buildTossUrl({ bankName, accountNumber, amount }: Transfer): string | null {
+  const bank = normalizeTossBankName(bankName);
+  if (!bank) return null;
+  const params = new URLSearchParams({ bank, accountNo: accountNumber });
+  // 금액 없는 링크는 amount를 생략해 보내는 사람이 토스에서 직접 입력하게 한다
+  if (amount !== null) params.set("amount", String(amount));
+  return `supertoss://send?${params.toString()}`;
+}
+
+// 앱 실행 스킴 출처는 공개 스킴 목록(비공식 단일 출처, KB만 토스페이먼츠 가이드와 교차 확인)이다.
+// 공식 문서가 아니라서 실기기에서 열리는지 확인하기 전에는 값이 바뀔 수 있다(토스 제외).
+// 앱이 없거나 스킴이 틀리면 열리지 않으므로 화면 안내(복사 후 직접 열기)가 항상 폴백이다.
+// 타일은 이 배열 순서대로 그린다.
+export const LAUNCH_APPS: readonly LaunchApp[] = [
+  launchApp("toss", "토스", buildTossUrl),
+  launchApp("kb", "국민", "kbbank://"),
+  launchApp("nh", "농협", "newnhsmartbanking://"),
+  launchApp("kakaobank", "카카오", "kakaobank://"),
+  launchApp("shinhan", "신한", "smailapp://"),
+  launchApp("woori", "우리", "wooribank://"),
+  launchApp("hana", "하나", "hanapush://"),
+  launchApp("kbank", "케뱅", "ukbanksmartbank://"),
 ];

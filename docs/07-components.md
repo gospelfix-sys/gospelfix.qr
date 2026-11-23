@@ -41,7 +41,7 @@
 |---|---|
 | Button, Card, Input, Select | `src/components/ui/button.tsx`, `card.tsx`, `input.tsx`, `select.tsx` (shadcn, 이 프로젝트 규칙에 맞게 정리) |
 | 상태 분기·조합 | `src/components/TransferView.tsx` (로딩/유효하지 않음/정상 분기, `useCopy` 연결) |
-| 화면 구성 요소 | `src/components/transfer/`: `TransferHeader`(헤더), `AmountHero`(금액 24px/600), `AccountCard`(입금 정보 표), `AppGrid`(앱 타일 4열 + 복사 안내), `GuideSteps`(3단계·고지), `CopyBar`(하단 고정 주 버튼), `InvalidLink`(유효하지 않음) |
+| 화면 구성 요소 | `src/components/transfer/`: `TransferHeader`(헤더), `AmountHero`(금액 24px/600), `AccountCard`(입금 정보 표), `AppGrid`(앱 타일 4열: `LAUNCH_APPS` 단일 목록의 링크 타일·복사 폴백 + 복사 안내), `GuideSteps`(3단계·고지), `CopyBar`(하단 고정 주 버튼), `InvalidLink`(유효하지 않음) |
 | QR 만들기 화면 | `src/app/page.tsx`(헤더+`CreateForm` 조합만, 라우트 `/`), `src/components/create/CreateForm.tsx`(입력·검증 오류 표시·결과 상태), `QrPreview.tsx`(요약 카드 + QR `<svg>` + PNG 저장·링크 복사), `NoticeText.tsx`(안내 문구 공통 표시), `LegacyLinkRedirect.tsx`(옛 링크 호환: `/`에서 fragment가 있으면 `/pay`+fragment로 `location.replace`). 로직은 `lib/buildTransfer.ts`·`lib/qr.ts`·`BANK_OPTIONS`(`lib/apps.ts`) |
 | 복사 로직 | `src/hooks/useCopy.ts` (클립보드 복사·"복사됐어요" 상태의 단일 출처. 복사하는 곳은 모두 이 훅을 쓴다) |
 | 화면 컨테이너 | `src/app/page.tsx`(QR 만들기), `src/app/pay/page.tsx`(송금 화면, `TransferView` 조합) (`mx-auto flex min-h-dvh max-w-sm flex-col`, 좌우 여백 `px-4`는 각 구성 요소가 가진다) |
@@ -49,10 +49,10 @@
 ## 사용 조건
 
 - **주 버튼은 화면당 1개**(송금 화면 `/pay`는 "계좌번호 복사", `/`는 "QR 만들기"). 금융앱 버튼은 모두 `outline`이며, 앱이 여러 개가 돼도 `default` 버튼을 추가하지 않는다.
-- **금융앱을 여는 타일 = 사전입력되는 앱만.** `lib/apps.ts`의 `FINANCE_APPS`에는 확인된 앱(현재 토스)만 등록한다. 토스 `buildUrl`이 `null`이면(은행 미인식) 타일을 숨기지 않고 **복사 타일로 대체**한다(`AppGrid`가 `buildUrl`이 `null`인 앱을 복사 타일 목록에 넣는다).
-- **토스 외 앱(`COPY_GUIDE_APPS`: 국민·농협·카카오·신한·우리·하나·케뱅)은 앱을 열지 않는다.** 스킴이 확인되지 않아 URL 필드를 두지 않았다. 타일을 누르면 계좌번호를 복사하고 "계좌번호가 복사됐어요. {앱 이름} 앱을 열어 붙여넣어 주세요." 안내 문구(`role="status"`)를 타일 아래에 보여준다. 새 앱 스킴 추가는 실기기 확인 후 사용자 승인이 필요하다.
+- **송금 화면까지 사전입력하는 앱(`prefilled: true`)은 `LAUNCH_APPS` 중 토스뿐이다.** 토스 `buildUrl`이 `null`이면(은행 미인식) 타일을 숨기지 않고 **복사 타일로 대체**한다(`AppGrid`가 `buildUrl` 결과가 `null`인 앱을 복사 `<Button aria-pressed>` 타일로 그린다).
+- **토스 외 앱(`LAUNCH_APPS`: 국민 `kbbank://`·농협 `newnhsmartbanking://`·카카오 `kakaobank://`·신한 `smailapp://`·우리 `wooribank://`·하나 `hanapush://`·케뱅 `ukbanksmartbank://`)은 앱만 연다.** 송금 화면까지 연결하지 않으며 `prefilled: false`이고 계좌번호·금액을 스킴에 싣지 않는다. 타일은 `<a className={buttonVariants({ variant: "outline" })} href={buildUrl(transfer)} onClick={() => onCopy(앱이름)}>`라서 누르면 계좌번호를 복사한 뒤 앱이 열리고, 사용자는 앱에서 붙여넣기만 하면 된다. "계좌번호가 복사됐어요. {앱 이름} 앱을 열어 붙여넣어 주세요." 안내 문구(`role="status"`)는 그대로 타일 아래에 보여준다. 스킴은 공개 스킴 목록(비공식 단일 출처, KB만 토스페이먼츠 가이드와 교차 확인)에서 가져왔고 **실기기에서 열리는지 아직 확인되지 않았다**. 앱이 없거나 스킴이 틀려 열리지 않을 때의 폴백은 화면의 복사 안내다. 새 앱 실행 스킴은 공개 목록 출처 + 실기기 확인이 필요하며 사용자 승인을 받는다.
 - **금융앱 로고·아이콘을 쓰지 않는다.** 글자 타일만. 상표를 쓰면 제휴로 오해될 수 있다.
-- **타일 선택 상태: 검정 2px 테두리.** 복사 타일(앱 이름 타일)을 누르면 그 타일이 선택되어 `border-foreground` 2px 테두리로 표시된다. 평소는 `border-border` 1px이다. 테두리를 1px로 통일하는 06번 규칙의 **유일한 예외**이며, 이유는 어느 앱을 눌렀는지(선택 상태)를 새 색 없이 구분하기 위해서다(상태를 위해 새 색을 만들지 않는다: 파란색·주황 금지. 주황은 주 버튼 전용). 구현은 호출부 className이 아니라 `components/ui/button.tsx` outline variant의 `aria-pressed:border-2 aria-pressed:border-foreground`이고, `AppGrid`는 `aria-pressed={copiedAppName === app.name}`만 준다. 높이가 48px로 고정이라 두께가 바뀌어도 레이아웃이 밀리지 않는다. 한 번에 하나만 선택되며 다른 타일을 누르면 옮겨가고, 하단 "계좌번호 복사" 버튼을 누르면 선택이 해제된다. 토스 링크 타일은 앱을 여는 링크라 선택 테두리가 없다.
+- **타일 선택 상태: 검정 2px 테두리.** 복사 타일(토스 `buildUrl`이 `null`일 때의 폴백 `<Button>` 타일)을 누르면 그 타일이 선택되어 `border-foreground` 2px 테두리로 표시된다. 평소는 `border-border` 1px이다. 테두리를 1px로 통일하는 06번 규칙의 **유일한 예외**이며, 이유는 어느 앱을 눌렀는지(선택 상태)를 새 색 없이 구분하기 위해서다(상태를 위해 새 색을 만들지 않는다: 파란색·주황 금지. 주황은 주 버튼 전용). 구현은 호출부 className이 아니라 `components/ui/button.tsx` outline variant의 `aria-pressed:border-2 aria-pressed:border-foreground`이고, `AppGrid`는 `aria-pressed={copiedAppName === app.name}`만 준다. 높이가 48px로 고정이라 두께가 바뀌어도 레이아웃이 밀리지 않는다. 한 번에 하나만 선택되며 다른 타일을 누르면 옮겨가고, 하단 "계좌번호 복사" 버튼을 누르면 선택이 해제된다. 토스 링크 타일과 `LAUNCH_APPS` 링크 타일은 앱을 여는 링크라 선택 테두리가 없다.
 - **상태 변화는 새 색이 아니라 글자로.** 하단 바의 주 버튼은 복사 후 1.5초간 "복사됐어요"로 바뀐다(`useCopy`의 `copied`). 타일을 눌렀을 때의 안내 문구는 마지막으로 복사한 앱 이름으로 계속 보인다(`lastLabel`).
 - **금액 없는 송금 화면**: `Transfer.amount`가 `null`이면 `AmountHero`는 영역 자체를 그리지 않고(빈 칸·"0원" 금지), 토스 딥링크는 `amount`를 생략한다. 나머지 구성은 그대로다.
 - **QR 만들기 화면(`/`) 안내 문구(확정, 한 글자도 바꾸지 않는다)**: 만든 사람이 QR의 성격을 알도록 두 문구를 쓴다.
@@ -69,8 +69,9 @@
 - [ ] 주 버튼이 화면에 1개인가 (`/pay`는 하단 고정 바, `/`는 "QR 만들기"). 주황은 이 버튼에만 쓰였는가
 - [ ] 앱 타일이 4열·글자만(로고 없음)이고 문구가 앱 이름만인가
 - [ ] 토스 `buildUrl`이 `null`이어도 타일이 사라지지 않고 복사 타일로 바뀌는가
-- [ ] 복사 타일을 누르면 그 타일만 검정 2px 테두리로 선택 표시되고(파란색·주황 아님), 다른 타일을 누르면 옮겨가며, "계좌번호 복사" 버튼을 누르면 해제되는가
-- [ ] 선택 표시가 호출부 className이 아니라 `ui/button.tsx` outline variant의 `aria-pressed:` 스타일이고, 토스 링크 타일에는 없는가
+- [ ] `LAUNCH_APPS` 타일이 `buildUrl(transfer)` 결과의 `<a href>`이고 누르면 `onCopy`로 계좌번호를 복사하며, 스킴에 계좌·금액을 싣지 않았는가(실기기 확인 전임을 문서에 유지했는가)
+- [ ] 복사 폴백 타일을 누르면 그 타일만 검정 2px 테두리로 선택 표시되고(파란색·주황 아님), 다른 타일을 누르면 옮겨가며, "계좌번호 복사" 버튼을 누르면 해제되는가
+- [ ] 선택 표시가 호출부 className이 아니라 `ui/button.tsx` outline variant의 `aria-pressed:` 스타일이고, 링크 타일(토스·`LAUNCH_APPS`)에는 없는가
 - [ ] 입력창·선택이 `ui/input.tsx`·`ui/select.tsx`(48px, 16px/400, `rounded-2xl`, 그림자 없음)이고 호출부에서 높이·글자를 덮어쓰지 않았는가
 - [ ] QR이 흰 바탕·검정 모듈·여백 4모듈이고, QR 위 요약 카드로 입력과 대조할 수 있는가(입력이 바뀌면 이전 QR이 지워지는가)
 - [ ] `/`(QR 만들기)에 문구 A(항상)와 문구 B(QR 생성 후)가 위 확정 문구 그대로 있는가
