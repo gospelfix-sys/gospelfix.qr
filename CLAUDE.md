@@ -72,4 +72,4 @@ gospelfix 앱 팝업(QR)  ──>  https://<pay>/#b=&a=&m=&h=
 
 ## 메모리
 
-`.claude/memory/MEMORY.md`에 프로젝트 결정 사항 인덱스가 있다(gitignore 대상).
+`.claude/memory/MEMORY.md`에 프로젝트 결정 사항 인덱스가 있다(gitignore 대상). `save-memory` 스킬은 시스템 기본 auto memory 경로(`~/.claude/projects/...`)가 아니라 이 저장소의 `.claude/memory/`에 저장한다. 계좌번호·금액 같은 개인 금융정보와 시크릿은 메모리에도 쓰지 않는다.
