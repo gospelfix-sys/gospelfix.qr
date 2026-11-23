@@ -45,13 +45,13 @@ gospelfix 앱 팝업(QR) 또는 /(QR 만들기) ──>  https://<pay>/pay#b=&a=
 
 ## 원칙
 
-- **모든 UX/UI는 shadcn/ui 컴포넌트(base-nova)를 기반으로 만든다.** 설정은 루트 `components.json`, 추가는 `npx shadcn@latest add <이름>`, `asChild` 금지(링크 버튼은 `<a className={buttonVariants({variant})}>`). 값·규칙은 `docs/DESIGN.md`(→ `docs/07-components.md`, `docs/09-shadcn-tokens.md`)를 따른다. 색은 CSS 변수 클래스(`bg-card`, `border-border` 등)만 쓴다.
+- **모든 UX/UI는 shadcn/ui 컴포넌트(base-nova)를 기반으로 만든다.** 설정은 루트 `components.json`, 추가는 `npx shadcn@latest add <이름>`, `asChild` 금지(링크 버튼은 `<a className={buttonVariants({variant})}>`). 값·규칙은 `docs/DESIGN.md`(→ `docs/07-components.md`, `docs/09-shadcn-tokens.md`)를 따른다. 색은 CSS 변수 클래스(`bg-card`, `border-border` 등)만 쓴다. 팔레트는 가스펄픽스 브랜드 사이트와 통일한 베이지 중립색 + 주황 포인트(`--primary` #FF5500, 주 버튼에만, 글자는 검정)이고 `--radius`는 1rem이다(`docs/02-colors.md`, `docs/05-radius.md`).
 - **계좌정보는 URL fragment(`#b=&a=&h=`, `m`은 선택)로만 받는다.** `?query`로 바꾸지 않는다.
 - 백엔드가 필요해지면 `gospelfix.cms.api`에서 시작하고, 이 앱은 직접 호출하지 않는다.
 - `noindex`. 분석 스크립트·외부 요청·콘솔 로그·외부 폰트 금지.
 - 가스펄픽스 서비스 전용. 금융앱 로고는 쓰지 않고, "결제"가 아니라 "송금"이라고 표기한다. 면책 단정 문구는 쓰지 않는다.
 - 화면에는 편의 기능·제휴 아님·보내기 전 확인 안내를 항상 노출한다. QR 만들기 화면(`/`)은 확정된 두 안내 문구(A: 하단 상시, B: QR 생성 후)를 노출한다(문구는 `docs/07-components.md`).
-- 오류 표시는 빨간색이 아니라 검정이다: 오류 문구 `font-semibold` + `role="alert"`, 오류 필드 `aria-invalid` 시 `border-primary` 2px. `--destructive`는 화면에 쓰지 않는다.
+- 오류 표시는 빨간색이 아니라 검정이다: 오류 문구 `font-semibold` + `role="alert"`, 오류 필드 `aria-invalid` 시 `border-foreground`(검정) 2px. `--primary`는 주황이라 오류·선택에 쓰지 않는다. `--destructive`는 화면에 쓰지 않는다.
 - 커스텀 스킴(`supertoss://`)은 `next/link`가 아닌 일반 `<a>`로 연다.
 - shadcn 관련 패키지(`@base-ui/react`, `class-variance-authority`, `lucide-react`)와 `lib/utils.ts`(`cn`), `globals.css`의 CSS 변수, shadcn 컴포넌트 `button`·`card`·`input`·`select`, QR 의존성 `qrcode-generator`는 이미 들어와 있다. 새 shadcn 컴포넌트·의존성 추가는 사용자 승인 후에 한다.
 

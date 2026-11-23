@@ -39,7 +39,7 @@ function SelectTrigger({
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
       className={cn(
-        "flex h-12 w-full items-center justify-between gap-2 rounded-lg border border-input bg-background px-3 text-base font-normal whitespace-nowrap text-foreground transition-colors outline-none select-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid=true]:border-2 aria-[invalid=true]:border-primary data-[placeholder]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        "flex h-12 w-full items-center justify-between gap-2 rounded-2xl border border-input bg-card px-3 text-base font-normal whitespace-nowrap text-foreground transition-colors outline-none select-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid=true]:border-2 aria-[invalid=true]:border-foreground data-[placeholder]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0",
         className
       )}
       {...props}
@@ -84,7 +84,7 @@ function SelectContent({
         <SelectPrimitive.Popup
           data-slot="select-content"
           className={cn(
-            "relative isolate z-50 max-h-[min(var(--available-height),20rem)] w-[var(--anchor-width)] min-w-36 overflow-x-hidden overflow-y-auto rounded-lg border border-border bg-popover text-popover-foreground",
+            "relative isolate z-50 max-h-[min(var(--available-height),20rem)] w-[var(--anchor-width)] min-w-36 overflow-x-hidden overflow-y-auto rounded-2xl border border-border bg-popover text-popover-foreground",
             className
           )}
           {...props}

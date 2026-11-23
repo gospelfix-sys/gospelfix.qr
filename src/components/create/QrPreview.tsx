@@ -93,7 +93,7 @@ export default function QrPreview({
         accountHolder={accountHolder}
       />
       {/* QR은 스캔 안정성을 위해 테마와 무관하게 흰 바탕·검정 모듈로 고정한다(색 이름은 SVG 속성) */}
-      <div className="overflow-hidden rounded-xl border border-border">
+      <div className="overflow-hidden rounded-2xl border border-border">
         <svg
           role="img"
           aria-label="송금 안내 QR 코드"

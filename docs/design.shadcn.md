@@ -10,15 +10,15 @@
 ## Colors
 | 이름 | 값 | 쓰는 곳 |
 |---|---|---|
-| 바탕 | #FFFFFF | 화면 배경 |
-| 표면 | #F9FAFB | 입금 정보 표 |
-| 글자 기본 | #111827 | 제목, 본문, 값 |
-| 글자 보조 | #6B7280 | 라벨, 안내·고지 |
-| 테두리 | #E5E7EB | 표 경계, 행 구분선 |
-| 포인트 색 | #000000 | 주 버튼(계좌번호 복사)에만 |
-| 포인트 옅은 것 | #F3F4F6 | 보조 버튼 hover/active |
+| 바탕 | #F7F5F0 | 화면 배경(베이지) |
+| 표면 | #FFFFFF | 입금 정보 표, 앱 타일·입력창 바탕, 팝업 |
+| 글자 기본 | #111111 | 제목, 본문, 값, 오류·선택 2px 테두리 |
+| 글자 보조 | #6B6B66 | 라벨, 안내·고지 (바탕 4.9:1) |
+| 테두리 | #E8E5DF | 표 경계, 행 구분선 |
+| 포인트 색 | #FF5500 (주황, 글자는 #111111 5.9:1) | 주 버튼(계좌번호 복사, QR 만들기)에만 |
+| 보조 면 | #F0EEE8 | 보조 버튼 hover/active |
 
-바탕이 표면보다 밝다. 카드 경계는 테두리 1px가 함께 잡는다.
+카드가 바탕보다 밝다(베이지 바탕 + 흰 카드). 카드 경계는 테두리 1px가 함께 잡는다. 포커스 링은 #111111. 2026-11-23 브랜드 사이트와 통일하면서 포인트 색을 검정에서 주황으로 바꿨다(근거·대비 계산은 `02-colors.md`).
 
 ## Typography
 - Font: 시스템 폰트 (웹폰트·외부 폰트 금지)
@@ -31,18 +31,18 @@
 - 화면 좌우 16 / 본문 위아래 24, 표 행 16×12, 섹션 사이 24, 섹션 안 8(타일 사이 8)
 
 ## Radius
-- 버튼 8px, 카드 12px, 원형은 999
+- 버튼·앱 타일·입력창·선택·카드·QR 틀 모두 16px(`rounded-2xl`, `--radius: 1rem`), 원형은 999
 
 ## Elevation
-- 테두리 1px만 쓴다(예외: 선택된 앱 타일만 검정 2px, 선택 상태 구분용). 그림자·그라데이션·블러 없음
+- 테두리 1px만 쓴다(예외: 선택된 앱 타일만 검정 `border-foreground` 2px, 선택 상태 구분용). 그림자·그라데이션·블러 없음
 
 ## Components (shadcn)
-- 주 버튼: shadcn `Button` default + `size="lg"`(48px, 16px/600) — 검정 배경 + 흰 글자, 화면당 하나("계좌번호 복사"), 하단 고정 바(`sticky bottom-0`, 위 테두리 1px, safe-area 여백)에 둔다
-- 금융앱 타일: shadcn `Button` outline + 기본 size(48px, 13px/400) — 4열 그리드, 글자만(앱 이름만, 로고 없음). 복사 타일을 누르면 그 타일만 검정 2px 테두리로 선택 표시(`aria-pressed`, `ui/button.tsx`에서 처리, 하단 복사 버튼을 누르면 해제, 토스 링크 타일은 해당 없음). 토스는 `<a className={buttonVariants({ variant: "outline" })}>`로 앱을 열고, 토스 `buildUrl`이 `null`이면 복사 타일로 대체하며, 토스 외 앱(`COPY_GUIDE_APPS`)은 앱을 열지 않고 계좌번호 복사 + 안내 문구
+- 주 버튼: shadcn `Button` default + `size="lg"`(48px, 16px/600) — 주황 배경 + 검정 글자, 화면당 하나("계좌번호 복사"·"QR 만들기"), 하단 고정 바(`sticky bottom-0`, 위 테두리 1px, safe-area 여백)에 둔다
+- 금융앱 타일: shadcn `Button` outline + 기본 size(48px, 13px/400) — 4열 그리드, 글자만(앱 이름만, 로고 없음). 복사 타일을 누르면 그 타일만 검정(`border-foreground`) 2px 테두리로 선택 표시(`aria-pressed`, `ui/button.tsx`에서 처리, 하단 복사 버튼을 누르면 해제, 토스 링크 타일은 해당 없음). 토스는 `<a className={buttonVariants({ variant: "outline" })}>`로 앱을 열고, 토스 `buildUrl`이 `null`이면 복사 타일로 대체하며, 토스 외 앱(`COPY_GUIDE_APPS`)은 앱을 열지 않고 계좌번호 복사 + 안내 문구
 - 헤더: 높이 48px 얇은 상단 바(글자만, 아래 테두리 1px)
-- 카드: shadcn `Card` — `bg-card`, 12px, 테두리 1px, 그림자 없음
-- 입력창 `Input`·선택 `Select`(QR 만들기 화면 `/`만): 높이 48px, 16px/400(iOS 확대 방지), `rounded-lg`, 테두리 1px `border-input`, 그림자 없음. 오류(`aria-invalid`)는 검정(`border-primary`) 2px 테두리, 오류 문구는 `font-semibold` + `role="alert"`(빨강 없음). Select 팝업은 테두리 1px·`bg-popover`
-- QR 영역(`/`): 흰 바탕·검정 모듈 고정, 여백 4모듈, 테두리 1px + 12px, 위에 입금 정보 요약 카드로 대조. QR·요약 카드 근처에 안내 문구 B. 보조 버튼 "PNG로 저장"·"링크 복사"(outline). PNG canvas는 `#ffffff`/`#000000` 직접 사용(QR 규격 값, canvas는 CSS 변수 불가)
+- 카드: shadcn `Card` — `bg-card`(흰색), 16px, 테두리 1px, 그림자 없음
+- 입력창 `Input`·선택 `Select`(QR 만들기 화면 `/`만): 높이 48px, 16px/400(iOS 확대 방지), `rounded-2xl`, `bg-card`, 테두리 1px `border-input`, 그림자 없음. 오류(`aria-invalid`)는 검정(`border-foreground`) 2px 테두리(`border-primary`는 주황이라 쓰지 않음), 오류 문구는 `font-semibold` + `role="alert"`(빨강 없음). Select 팝업은 테두리 1px·`bg-popover`
+- QR 영역(`/`): 흰 바탕·검정 모듈 고정, 여백 4모듈, 테두리 1px + 16px, 위에 입금 정보 요약 카드로 대조. QR·요약 카드 근처에 안내 문구 B. 보조 버튼 "PNG로 저장"·"링크 복사"(outline). PNG canvas는 `#ffffff`/`#000000` 직접 사용(QR 규격 값, canvas는 CSS 변수 불가)
 - 칩·배지·탭: 없음
 
 ## 화면 순서
@@ -54,17 +54,17 @@
 
 ### DO
 - UX/UI는 shadcn 컴포넌트 기반. 있는 UI는 직접 만들지 않고, 모양 변경은 `components/ui/*` 정의 파일에서
-- 포인트 색은 주 버튼에만 쓴다
+- 포인트 색(주황)은 주 버튼에만 쓴다. 오류·선택은 주황이 아니라 검정
 - 입력(fragment)은 `parseTransferHash`를 거친 값만 쓴다
 - "제휴 아님 + 보내기 전 확인" 고지와 "계좌번호 복사"를 항상 보여준다
 - 입력값(`/` QR 만들기)은 저장·전송하지 않고, QR 링크는 왕복 검증(`buildTransferUrl`)을 거친 값만 쓴다
 - `/`(QR 만들기)는 확정 안내 문구 2건을 노출한다. A(하단, 항상): "QR을 스캔한 사람이 금융앱에서 금액을 직접 입력해요. 링크를 받은 사람은 누구나 이 계좌 정보를 볼 수 있어요." B(QR 생성 후, QR·요약 카드 근처): "QR을 공유하기 전에 은행·계좌번호·예금주를 꼭 확인해 주세요."
-- 오류는 굵기·테두리로 구분한다(`font-semibold` + `role="alert"`, `aria-invalid` 시 검정 2px 테두리)
+- 오류는 굵기·테두리로 구분한다(`font-semibold` + `role="alert"`, `aria-invalid` 시 검정 `border-foreground` 2px 테두리)
 - 용어는 "송금/입금"
 
 ### DON'T
 - 표 밖의 색·굵기·간격·모서리 값 금지
 - 그림자·그라데이션·글로우 금지
-- 오류에 빨간색·상태 색 금지(`--destructive` 화면 사용 금지)
+- 오류에 빨간색·주황·상태 색 금지(`--destructive` 화면 사용 금지, 오류·선택에 `border-primary` 금지)
 - 외부 요청(웹폰트·CDN·분석) 금지, 계좌정보를 query·저장소·로그로 옮기기 금지
 - 금융앱 로고 금지, "결제" 표현 금지, 면책 단정 문구 금지

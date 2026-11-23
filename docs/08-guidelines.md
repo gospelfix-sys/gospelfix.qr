@@ -8,7 +8,7 @@
 - **UX/UI는 shadcn/ui 컴포넌트를 기반으로 만든다.** 새 UI가 필요하면 shadcn에 있는지 먼저 확인하고 `npx shadcn@latest add <이름>`으로 추가한다. 없는 것만 직접 만든다
 - shadcn 컴포넌트의 모양을 바꿀 때는 호출부가 아니라 `components/ui/*`(정의 파일)를 고친다
 - 색은 shadcn 변수 클래스(`bg-primary`, `text-muted-foreground`, `border-border`)로만 참조한다
-- 포인트 색(검정)은 주 버튼(계좌번호 복사)에만 쓴다
+- 포인트 색(주황 #FF5500)은 주 버튼(계좌번호 복사, QR 만들기)에만 쓴다. 주 버튼 글자는 검정(`text-primary-foreground`)
 - 화면마다 주 버튼은 하나. 나머지는 보조 버튼이나 글자 안내
 - 카드는 테두리 1px로만 구분한다. 다른 방식을 섞지 않는다
 - 가까운 것은 붙이고 먼 것은 띄운다 (섹션 사이 24, 섹션 안 8)
@@ -18,16 +18,18 @@
 - QR 만들기 화면(`/`)의 입력값(은행·계좌번호·예금주)은 컴포넌트 상태에만 두고 저장·전송하지 않는다. QR의 링크는 `buildTransferUrl`(왕복 검증)을 거친 값만 쓴다
 - 앱이 열리지 않을 때를 위한 "계좌번호 복사"를 항상 보여준다
 - QR 만들기 화면(`/`)에는 확정 안내 문구 A(하단, QR 생성 전에도 항상)와 B(QR 생성 후 QR·요약 카드 근처)를 노출한다(문구는 `07-components.md`)
-- 오류는 굵기와 테두리로 구분한다: 오류 문구 `font-semibold` + `role="alert"`, 오류 필드 `aria-invalid` 시 검정(`border-primary`) 2px 테두리
+- 오류는 굵기와 테두리로 구분한다: 오류 문구 `font-semibold` + `role="alert"`, 오류 필드 `aria-invalid` 시 검정(`border-foreground`) 2px 테두리(`border-primary`는 주황이라 쓰지 않는다)
 - QR 이미지(SVG·PNG canvas)는 흰 바탕·검정 모듈 값을 직접 쓴다(`#ffffff`/`#000000`, QR 규격 값)
 - 용어는 "송금"/"입금". 브랜드 한글 표기는 "가스펄픽스"
 
 ### DON'T
 - 02번 색상표에 없는 색을 추가하지 않는다 (`blue-*`, `red-*`, `gray-400` 등)
-- 오류에 빨간색·상태 색을 쓰지 않는다(`text-destructive`, `border-destructive` 금지). 굵기·테두리로 구분한다
+- 오류에 빨간색·주황·상태 색을 쓰지 않는다(`text-destructive`, `border-destructive`, 오류·선택에 `border-primary` 금지). 굵기와 `border-foreground` 테두리로 구분한다
+- 주황(`primary`)을 글자·테두리·링크·아이콘·배지에 쓰지 않는다. 주황 면 위 글자는 흰색이 아니라 검정이다(흰색은 3.2:1)
+- 보조 글자에 사이트의 #888을 쓰지 않는다(베이지 바탕 3.2:1). `--muted-foreground`(#6B6B66)만 쓴다
 - 03번에 정한 굵기(400/600) 외의 굵기를 쓰지 않는다 (`font-bold`·`font-medium` 금지)
 - 04번 스케일에 없는 중간값·임의 간격을 쓰지 않는다
-- 05번에 없는 모서리 값을 쓰지 않는다 (원형은 `rounded-full`, 절반 계산 금지)
+- 05번에 없는 모서리 값을 쓰지 않는다 (16px은 `rounded-2xl`, 원형은 `rounded-full`, 절반 계산 금지. `rounded-lg`·`rounded-xl` 금지)
 - 그림자(`shadow-*`)·그라데이션·글로우·블러를 쓰지 않는다
 - 글자에 그림자를 넣지 않는다
 - 인라인 `style=`을 쓰지 않는다 (`className`만)
@@ -46,7 +48,7 @@
 
 | 증상 | 원인 | 해결 |
 |---|---|---|
-| 카드 경계가 흐릿하거나 화면마다 달라짐 | 표면 색만 두고 테두리를 뺌 | 06번대로 `border border-border` 유지 |
+| 카드 경계가 흐릿하거나 화면마다 달라짐 | 흰 카드가 베이지 바탕과 거의 같아 보여 테두리(#E8E5DF)를 뺌 | 06번대로 `border border-border` 유지 |
 | 굵은 글자가 너무 무거워 보임 | `font-bold`(700)가 섞임 | `font-semibold`(600)로 통일 |
 | 금액이 `1e+21` 같은 값으로 나옴 | 파서의 상한·정수 검사 누락 | `parseTransfer.ts`의 `MAX_AMOUNT`·`isSafeInteger` 확인 |
 | 앱 버튼 눌러도 반응 없음 | `next/link`로 감싸 커스텀 스킴을 가로챔 | `<a href>` 사용 |
@@ -58,5 +60,5 @@
 
 ## 체크리스트
 - [ ] 금지 문장이 3개 이상 있는가
-- [ ] 포인트 색 사용처를 제한했는가
+- [ ] 포인트 색(주황) 사용처를 주 버튼으로 제한했는가
 - [ ] 겪은 문제를 증상 표에 추가했는가
