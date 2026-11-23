@@ -1,0 +1,30 @@
+# dependencies
+/node_modules
+.yarn/install-state.gz
+
+# next.js
+/.next/
+/out/
+
+# misc
+.DS_Store
+*.pem
+yarn-debug.log*
+yarn-error.log*
+
+# dotenv — .env.example 제외 전부 커밋 금지
+.env
+.env.*
+!.env.example
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# Claude Code 로컬 전용
+.claude/settings.local.json
+.claude/plans/
+.claude/memory/
