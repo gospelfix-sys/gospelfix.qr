@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## 명령어
 
 ```bash
-yarn dev          # http://localhost:3002
+yarn dev          # http://localhost:3000
 yarn build        # out/ 생성 (output: "export")
 yarn lint         # next lint
 npx tsc --noEmit  # 타입 체크

@@ -16,6 +16,6 @@ https://<도메인>/#b=<은행>&a=<계좌번호>&m=<금액>&h=<예금주>
 
 ```bash
 yarn install --frozen-lockfile
-yarn dev      # http://localhost:3002
+yarn dev      # http://localhost:3000
 yarn build    # 정적 export (out/)
 ```
