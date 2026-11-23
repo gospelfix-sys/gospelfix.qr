@@ -75,3 +75,20 @@ export const FINANCE_APPS: FinanceApp[] = [
     },
   },
 ];
+
+export interface CopyGuideApp {
+  id: string;
+  name: string;
+}
+
+// 스킴이 확인되지 않은 앱이라 앱을 열지 않고 "계좌번호 복사"만 안내한다.
+// 그래서 buildUrl 같은 URL 필드를 두지 않는다(미확인 스킴 추가 금지).
+export const COPY_GUIDE_APPS: readonly CopyGuideApp[] = [
+  { id: "kb", name: "국민" },
+  { id: "nh", name: "농협" },
+  { id: "kakaobank", name: "카카오" },
+  { id: "shinhan", name: "신한" },
+  { id: "woori", name: "우리" },
+  { id: "hana", name: "하나" },
+  { id: "kbank", name: "케뱅" },
+];

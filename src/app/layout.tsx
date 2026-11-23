@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -7,10 +7,17 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+// 확대는 막지 않는다(접근성). 주소창 색은 배경과 맞춘다
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#ffffff",
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko">
-      <body className="min-h-screen bg-white text-gray-900 antialiased">{children}</body>
+      <body className="min-h-dvh bg-background text-foreground antialiased">{children}</body>
     </html>
   );
 }
