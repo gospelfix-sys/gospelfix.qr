@@ -28,3 +28,6 @@ next-env.d.ts
 .claude/settings.local.json
 .claude/plans/
 .claude/memory/
+
+# library build output
+/dist/
