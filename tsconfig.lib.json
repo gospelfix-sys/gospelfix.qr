@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "noEmit": false,
+    "incremental": false,
+    "declaration": true,
+    "plugins": []
+  },
+  "include": ["src/index.ts", "src/react.ts", "src/lib/**/*", "src/hooks/**/*", "src/components/**/*"],
+  "exclude": ["node_modules", "dist", "src/app"]
+}
