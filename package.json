@@ -4,7 +4,9 @@
   "private": true,
   "description": "송금 fragment 링크 파싱·QR 생성 로직과 React 송금 안내 UI (가스펄픽스 전용)",
   "license": "MIT",
-  "sideEffects": false,
+  "sideEffects": [
+    "**/*.css"
+  ],
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -29,6 +31,7 @@
         "default": "./dist/react.js"
       }
     },
+    "./styles.css": "./dist/styles.css",
     "./package.json": "./package.json"
   },
   "typesVersions": {
@@ -54,7 +57,8 @@
     "build": "next build",
     "lint": "next lint",
     "pretty": "prettier 'src/**/*.{ts,tsx,js,jsx}' --write",
-    "build:lib": "tsup",
+    "build:css": "tailwindcss -c tailwind.lib.config.ts -i src/styles/lib.css -o dist/styles.css --minify",
+    "build:lib": "tsup && yarn build:css",
     "prepack": "yarn build:lib"
   },
   "peerDependencies": {

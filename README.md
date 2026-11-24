@@ -97,45 +97,16 @@ export default function Home() {
 
 ## 스타일 설정 (React UI를 쓸 때 필수)
 
-UI는 Tailwind CSS 클래스와 shadcn 스타일 CSS 변수로 그려집니다. 패키지에 CSS가 포함되어 있지 않으므로 소비 프로젝트에서 두 가지를 설정해야 합니다.
+UI 스타일은 미리 빌드된 CSS로 제공됩니다. 앱의 진입 파일(예: Next.js `app/layout.tsx`) 한 곳에서 import하세요. 소비 프로젝트의 Tailwind 설정(`content`)이나 CSS 변수 정의는 필요 없습니다.
 
-1. Tailwind 3 `content` 에 패키지 경로를 추가합니다. 추가하지 않으면 패키지 안의 클래스가 생성되지 않아 화면이 깨집니다.
-
-```ts
-// tailwind.config.ts
-content: [
-  "./src/**/*.{ts,tsx}",
-  "./node_modules/@gospelfix/qr/dist/**/*.{js,mjs}",
-],
+```tsx
+import "@gospelfix/qr/styles.css";
 ```
 
-2. 색 토큰을 `tailwind.config` 의 `theme.extend.colors` 에 `var(--...)` 로 연결하고(`background`, `foreground`, `card`, `popover`, `primary`, `secondary`, `muted`, `accent`, `destructive` 각 `DEFAULT`/`foreground`, `border`, `input`, `ring`), `globals.css` 에 CSS 변수를 둡니다.
-
-```css
-:root {
-  --radius: 1rem;
-  --background: #f7f5f0;
-  --foreground: #111111;
-  --card: #ffffff;
-  --card-foreground: #111111;
-  --popover: #ffffff;
-  --popover-foreground: #111111;
-  --primary: #ff5500;
-  --primary-foreground: #111111;
-  --secondary: #f0eee8;
-  --secondary-foreground: #111111;
-  --muted: #f0eee8;
-  --muted-foreground: #6b6b66;
-  --accent: #f0eee8;
-  --accent-foreground: #111111;
-  --destructive: #dc2626;
-  --border: #e8e5df;
-  --input: #e8e5df;
-  --ring: #111111;
-}
-```
-
-Tailwind 4 등 다른 설정 방식은 아직 확인하지 않았습니다.
+- 이 CSS에는 컴포넌트가 쓰는 유틸리티 클래스, shadcn 색 토큰 변수(`:root` 의 `--background`, `--card`, `--primary` 등과 `--radius`), Tailwind 기본 리셋(preflight)이 들어 있습니다.
+- 소비 프로젝트에 이미 shadcn 변수(`--primary` 등)가 있으면 CSS를 import하는 순서에 따라 값이 서로 덮어쓰입니다. 패키지 화면의 색을 유지하려면 이 CSS를 나중에 import하고, 프로젝트의 기존 테마를 유지하려면 먼저 import하세요.
+- 포함된 리셋은 `*`, `html`, `body`, `button`, `p` 등 전역 요소에 적용됩니다. 리셋 없는 프로젝트에서는 기존 페이지의 기본 여백·테두리가 달라질 수 있으므로. 번들러에 따라 import한 CSS는 앱 전체에 적용될 수 있으니 적용 후 기존 화면을 확인하세요.
+- 번들러가 CSS import를 지원해야 합니다(Next.js, Vite 등).
 
 ## 원칙 (소비자에게도 적용됩니다)
 
@@ -154,7 +125,7 @@ semver를 따르되 0.x 동안에는 마이너(0.y.0)에서 호환되지 않는 
 yarn install --frozen-lockfile   # npm 금지, Node 24.x
 yarn dev          # http://localhost:3000 (데모 앱)
 yarn build        # out/ 생성 (정적 사이트)
-yarn build:lib    # dist/ 생성 (라이브러리, tsup 필요)
+yarn build:lib    # dist/ 생성 (JS는 tsup, dist/styles.css는 Tailwind CLI)
 npx tsc --noEmit
 yarn lint
 ```
