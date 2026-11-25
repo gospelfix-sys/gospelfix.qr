@@ -25,7 +25,7 @@ color: green
 
 ## 설계 규칙
 
-1. 이름 `@gospelfix/qr`, `publishConfig.access: "public"`, 라이선스는 기존 `LICENSE` 유지. `private: true` 는 사용자가 배포 단계로 넘어가기 전까지 유지하고, 제거 시점은 오케스트레이터가 사용자에게 확인한다.
+1. 이름 `@gospelfix/qr`, `publishConfig.access: "public"`, 라이선스는 기존 `LICENSE` 유지. 0.1.0은 배포 완료됐고 `private: true` 는 제거된 상태를 유지한다(다시 넣지 않는다). 이후 버전 배포(`npm publish`)는 사용자만 실행한다.
 2. 빌드는 ESM + CJS + `.d.ts` (`exports` 맵에 `types`/`import`/`require`). 로직은 React 없이도 import 가능하도록 **서브패스 분리**를 고려한다(예: `@gospelfix/qr` = 로직, `@gospelfix/qr/react` = UI).
 3. `react`·`react-dom` 은 `peerDependencies`(^18). 번들에 포함하지 않는다. `sideEffects: false`.
 4. `files` 화이트리스트로 `dist`, `README.md`, `LICENSE` 만 포함한다. **`docs/`, `.claude/`, `.env*`, 메모리, 테스트 스크립트가 tarball에 들어가면 실패**로 본다. 계좌번호·내부 사업 정보·시크릿 포함 여부를 `npm pack --dry-run` 목록으로 확인한다.
@@ -48,7 +48,7 @@ color: green
 ## 검증
 - tsc / lint / 빌드 / npm pack 파일 목록 / 소비 프로젝트 설치 테스트 결과
 ## 사용자 승인·조치 필요
-- 의존성 설치, npm 로그인·@gospelfix 조직 생성, 배포 직전 확인 (해당 시)
+- 의존성 설치, npm 로그인(2FA), 배포 직전 최종 확인 (해당 시)
 ## 인계 필요
 - transfer-logic / ui-writer / docs-keeper 가 해야 할 일
 ## 미해결·주의

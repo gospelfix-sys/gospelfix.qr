@@ -1,9 +1,16 @@
 {
   "name": "@gospelfix/qr",
   "version": "0.1.0",
-  "private": true,
   "description": "송금 fragment 링크 파싱·QR 생성 로직과 React 송금 안내 UI (가스펄픽스 전용)",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gospelfix-sys/gospelfix.qr.git"
+  },
+  "homepage": "https://github.com/gospelfix-sys/gospelfix.qr#readme",
+  "bugs": {
+    "url": "https://github.com/gospelfix-sys/gospelfix.qr/issues"
+  },
   "sideEffects": [
     "**/*.css"
   ],

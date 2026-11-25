@@ -57,15 +57,15 @@ gospelfix 앱 팝업(QR) 또는 /(QR 만들기) ──>  https://<pay>/pay#b=&a=
 - 커스텀 스킴(`supertoss://` 등)은 `next/link`가 아닌 일반 `<a>`로 연다.
 - shadcn 관련 패키지(`@base-ui/react`, `class-variance-authority`, `lucide-react`)와 `lib/utils.ts`(`cn`), `globals.css`의 CSS 변수, shadcn 컴포넌트 `button`·`card`·`input`·`select`, QR 의존성 `qrcode-generator`는 이미 들어와 있다. 새 shadcn 컴포넌트·의존성 추가는 사용자 승인 후에 한다.
 
-## 라이브러리화 계획
+## 라이브러리 (`@gospelfix/qr`)
 
-`@gospelfix/qr`(MIT)로 npm에 배포할 패키징 준비가 끝났다(범위: 로직 + React UI). 아직 배포하지 않았고 `package.json`은 배포 직전까지 `private: true`로 둔다(제거는 사용자 확인 후). `engines`는 `node 24.x` 그대로다.
+`@gospelfix/qr`(MIT, 범위: 로직 + React UI) 0.1.0을 2026-11-25에 npm에 배포했다(공개, 스코프 `@gospelfix`는 개인 계정 소유). `private: true`는 제거했고 `repository`·`homepage`·`bugs`를 추가했다. `npm publish`는 사용자만 실행하며 계정에 2FA가 필요하다(없으면 publish가 403). `engines`는 `node 24.x` 그대로다.
 
 - 진입점 2개: `@gospelfix/qr`(`src/index.ts`, 로직만: `parseTransferHash`·`Transfer`·`LAUNCH_APPS`·`LaunchApp`·`BANK_OPTIONS`·`BankOption`·`buildTransferHash`·`buildTransferUrl`·`TransferInput`·`createQrMatrix`)와 `@gospelfix/qr/react`(`src/react.ts`, `TransferView`·`CreateForm`, 빌드 후 `"use client"` 부착). tsup(ESM `.mjs` + CJS `.js` + d.ts)으로 `yarn build:lib`을 실행하고 `prepack`이 이를 자동 실행한다. 출력 `dist/`는 gitignore 대상이다. `package.json`에 `"type"` 필드를 두지 않은 것은 Next 앱의 설정 파일 해석이 바뀔 수 있어서다.
 - `next`·`react`·`react-dom`은 devDependencies, `react`·`react-dom` ^18은 peerDependencies다.
 - 스타일: 미리 빌드한 CSS(방식 B) `@gospelfix/qr/styles.css`를 제공한다. 소비자는 `import "@gospelfix/qr/styles.css"` 한 줄이면 되고 Tailwind 설정은 필요 없다. 입력은 `src/styles/lib.css`(`@import "../app/globals.css"`, 앱과 같은 CSS 변수 소스), 설정은 `tailwind.lib.config.ts`(앱 `tailwind.config.ts`의 theme 재사용, content는 `src/components/**`·`src/hooks/**`만), 스크립트는 `build:css`(출력 `dist/styles.css`, minify, 약 12.7 KB)이며 `build:lib`은 `tsup && yarn build:css`다. `package.json`의 `exports`에 `./styles.css`가 있고 `sideEffects`는 `["**/*.css"]`다(CSS import가 tree-shaking으로 사라지지 않게). 컴포넌트가 의존하므로 preflight(Tailwind 전역 리셋)를 포함한다. 알려진 한계(0.1.0): `:root`에 shadcn 표준 변수 이름(`--primary` 등)을 정의하고 preflight가 전역에 적용되므로, 소비자가 shadcn을 쓰면 import 순서에 따라 서로 덮어쓸 수 있다. body 배경은 CSS에 없다. 대안은 `[data-gospelfix-qr]` 스코프 + 변수 접두어이며 아직 적용하지 않았다(0.2.0에서 소비자 충돌 사례가 나오면 전환 검토, 0.x 동안 호환 파괴 허용).
 - 검증 완료: `build:lib`, `npm pack --dry-run`(dist·README·LICENSE만), 저장소 밖 설치 테스트(ESM·CJS·`/react`·타입).
-- 남은 일: 배포 직전 작업(`npm login`, `@gospelfix` 조직 생성, `private: true` 제거, 루트 README의 "아직 npm에 배포되지 않았습니다" 문구 제거, `npm publish --access public`)은 사용자만 실행한다. `TransferView`의 `hash` prop 추가, `buildTransferUrl`의 path 옵션은 후속 검토 항목이다.
+- 남은 일: 이후 버전 배포(`npm publish --access public`)는 사용자만 실행한다. 조직은 만들지 않았고 필요 없다(개인 계정 스코프로 충분). 한 번 올린 버전은 되돌릴 수 없으므로 수정은 새 버전으로 올린다. `TransferView`의 `hash` prop 추가, `buildTransferUrl`의 path 옵션은 후속 검토 항목이다.
 
 `src/lib/**`는 react·next·window에 의존하지 않는 순수 TS로 유지하고, 컴포넌트는 `next/*` 없이 props만으로 동작하게 쓴다. `npm publish`·`npm login`은 사용자만 실행한다.
 
